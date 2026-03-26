@@ -131,9 +131,10 @@ System.register(["jimu-core"], function (e, t) {
                             body: JSON.stringify({ landCode: fileCode }),
                           });
                           if (!r.ok) throw new Error(`HTTP error! ${r.status}`);
-                          const a = yield r.json();
-                          (console.log("API Response:", a),
-                            this.setState({ apiResult: a }));
+                            const a = yield r.json();
+                            console.log("API Response:", a);
+                            const data = a?.result?.result?.data ?? a;
+                            this.setState({ apiResult: data });
                         } catch (e) {
                           this.setState({ apiResult: { error: e.message } });
                         } finally {
@@ -365,7 +366,7 @@ System.register(["jimu-core"], function (e, t) {
                             this.state.apiResult &&
                               !this.state.loading &&
                               "object" == typeof this.state.apiResult &&
-                              !("error" in this.state.apiResult) &&
+                              !this.state.apiResult.error &&
                               e.React.createElement(
                                 "div",
                                 {
