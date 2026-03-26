@@ -134,6 +134,7 @@ System.register(["jimu-core"], function (e, t) {
                             const a = yield r.json();
                             console.log("API Response:", a);
                             const data = a?.result?.result?.data ?? a;
+                            console.log("Unwrapped data:", data, "total_amount:", data?.total_amount);
                             this.setState({ apiResult: data });
                         } catch (e) {
                           this.setState({ apiResult: { error: e.message } });
