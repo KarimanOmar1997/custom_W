@@ -94,7 +94,6 @@ System.register(["jimu-core"], function (e, t) {
                     (this.query = () => {
                       var e;
                       if (!this.isDsConfigured()) return;
-                      // ── single field: filecode ──
                       const [t] = this.props.useDataSources[0].fields,
                         r =
                           (null === (e = this.cityNameRef.current) ||
@@ -113,38 +112,30 @@ System.register(["jimu-core"], function (e, t) {
                       1 === this.props.useDataSources.length &&
                       this.props.useDataSources[0].fields &&
                       this.props.useDataSources[0].fields.length >= 1),
-                    // ── fetchFiles now takes a single landCode and uses POST ──
-                    (this.fetchFiles = (landCode) =>
+                    (this.fetchFiles = (fileCode) =>
                       t(this, void 0, void 0, function* () {
                         try {
-                          (console.log("fetchFiles CALLED with landCode:", landCode),
+                          (console.log("fetchFiles CALLED with:", fileCode),
                             this.setState({
                               loading: !0,
                               apiResult: null,
-                              selectedRecord: { filecode: landCode },
+                              selectedRecord: { filecode: fileCode },
                             }));
                           const url = "http://10.107.230.40:8069/api/Boyot/GetLandData";
-                          console.log("POSTing to:", url, "body:", { landCode });
-                          const response = yield fetch(url, {
+                          console.log("POST to:", url, "landCode:", fileCode);
+                          const r = yield fetch(url, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ landCode: landCode }),
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ landCode: fileCode }),
                           });
-                          if (!response.ok)
-                            throw new Error(`HTTP error! ${response.status}`);
-                          const json = yield response.json();
-                          console.log("API Response:", json);
-                          // Unwrap nested result: json.result.result.data
-                          const data =
-                            json &&
-                            json.result &&
-                            json.result.result &&
-                            json.result.result.data
-                              ? json.result.result.data
-                              : json;
-                          this.setState({ apiResult: data });
-                        } catch (err) {
-                          this.setState({ apiResult: { error: err.message } });
+                          if (!r.ok) throw new Error(`HTTP error! ${r.status}`);
+                          const a = yield r.json();
+                          (console.log("API Response:", a),
+                            this.setState({ apiResult: a }));
+                        } catch (e) {
+                          this.setState({ apiResult: { error: e.message } });
                         } finally {
                           this.setState({ loading: !1 });
                         }
@@ -156,7 +147,6 @@ System.register(["jimu-core"], function (e, t) {
                           }).format(Number(e))
                         : "0"),
                     (this.dataRender = (t, o) => {
-                      // ── single field: filecode ──
                       const [r] = this.props.useDataSources[0].fields;
                       return e.React.createElement(
                         e.React.Fragment,
@@ -177,7 +167,6 @@ System.register(["jimu-core"], function (e, t) {
                           t && t.getStatus() === e.DataSourceStatus.Loaded
                             ? t.getRecords().map((o, n) => {
                                 var i;
-                                // ── only filecode field ──
                                 const l = o.getData()[r],
                                   d =
                                     (null === (i = this.state.selectedRecord) ||
@@ -373,31 +362,10 @@ System.register(["jimu-core"], function (e, t) {
                                 }),
                                 "Loading...",
                               ),
-                            // ── "Land not found" message case ──
-                            this.state.apiResult &&
-                              !this.state.loading &&
-                              this.state.apiResult.message &&
-                              !this.state.apiResult.error &&
-                              e.React.createElement(
-                                "div",
-                                {
-                                  style: {
-                                    backgroundColor: "#fff8e1",
-                                    color: "#f57f17",
-                                    padding: "12px",
-                                    border: "1px solid #ffe082",
-                                    textAlign: "center",
-                                    fontSize: "14px",
-                                  },
-                                },
-                                this.state.apiResult.message,
-                              ),
-                            // ── normal data case ──
                             this.state.apiResult &&
                               !this.state.loading &&
                               "object" == typeof this.state.apiResult &&
                               !("error" in this.state.apiResult) &&
-                              !this.state.apiResult.message &&
                               e.React.createElement(
                                 "div",
                                 {
@@ -513,7 +481,6 @@ System.register(["jimu-core"], function (e, t) {
                                   ),
                                 ),
                               ),
-                            // ── error case ──
                             this.state.apiResult &&
                               this.state.apiResult.error &&
                               e.React.createElement(
